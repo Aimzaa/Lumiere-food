@@ -1,0 +1,3381 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Lumière — Premium Dining Experience</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            :root {
+                --bg: #08060e;
+                --bg2: #100d1a;
+                --bg3: #181224;
+                --purple: #7b3fa0;
+                --purple2: #9b5ec0;
+                --purple3: #2a1a38;
+                --rose: #c9848a;
+                --rose2: #e8a4aa;
+                --rosegold: #c09070;
+                --gold: #c9a96e;
+                --gold2: #e8c98a;
+                --gold3: #f5e0a8;
+                --text: #f0eaf8;
+                --muted: #8a7a9a;
+                --border: rgba(123, 63, 160, 0.18);
+                --card: #0e0a1a;
+            }
+            body {
+                font-family: "Inter", sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                overflow-x: hidden;
+            }
+
+            /* LOADER */
+            .loader {
+                position: fixed;
+                inset: 0;
+                background: var(--bg);
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: opacity 0.8s ease;
+            }
+            .loader.hide {
+                opacity: 0;
+                pointer-events: none;
+            }
+            .loader-logo {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 3rem;
+                font-weight: 300;
+                letter-spacing: 0.2em;
+                color: var(--text);
+                opacity: 0;
+                animation: fadeUp 0.8s ease 0.3s forwards;
+            }
+            .loader-logo span {
+                color: var(--gold);
+            }
+            .loader-line {
+                width: 0;
+                height: 1px;
+                background: linear-gradient(
+                    to right,
+                    transparent,
+                    var(--gold),
+                    transparent
+                );
+                margin-top: 1.5rem;
+                animation: expandLine 1.2s ease 0.8s forwards;
+            }
+            .loader-sub {
+                font-size: 0.72rem;
+                color: var(--muted);
+                letter-spacing: 0.25em;
+                text-transform: uppercase;
+                margin-top: 1rem;
+                opacity: 0;
+                animation: fadeUp 0.6s ease 1.5s forwards;
+            }
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes expandLine {
+                from {
+                    width: 0;
+                }
+                to {
+                    width: 200px;
+                }
+            }
+
+            /* NAV */
+            nav {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                padding: 0 4rem;
+                transition: all 0.4s ease;
+            }
+            nav.scrolled {
+                background: rgba(8, 6, 14, 0.92);
+                backdrop-filter: blur(24px);
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-inner {
+                max-width: 1400px;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                height: 76px;
+            }
+            .logo {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.6rem;
+                font-weight: 400;
+                letter-spacing: 0.1em;
+                color: var(--text);
+                text-decoration: none;
+            }
+            .logo em {
+                font-style: italic;
+                color: var(--gold);
+            }
+            .nav-links {
+                display: flex;
+                gap: 2.5rem;
+                list-style: none;
+            }
+            .nav-links a {
+                color: var(--muted);
+                text-decoration: none;
+                font-size: 0.82rem;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                transition: color 0.3s;
+                position: relative;
+            }
+            .nav-links a::after {
+                content: "";
+                position: absolute;
+                bottom: -4px;
+                left: 0;
+                width: 0;
+                height: 1px;
+                background: var(--gold);
+                transition: width 0.3s;
+            }
+            .nav-links a:hover {
+                color: var(--text);
+            }
+            .nav-links a:hover::after {
+                width: 100%;
+            }
+            .nav-actions {
+                display: flex;
+                gap: 0.75rem;
+                align-items: center;
+            }
+            .search-wrap {
+                position: relative;
+            }
+            .search-bar {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 0.5rem 1rem 0.5rem 2.25rem;
+                border-radius: 30px;
+                font-size: 0.8rem;
+                width: 190px;
+                outline: none;
+                transition: all 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .search-bar::placeholder {
+                color: var(--muted);
+            }
+            .search-bar:focus {
+                border-color: rgba(123, 63, 160, 0.5);
+                background: rgba(123, 63, 160, 0.08);
+                width: 220px;
+            }
+            .search-icon {
+                position: absolute;
+                left: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--muted);
+                font-size: 0.82rem;
+            }
+            .auth-btn {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--muted);
+                padding: 0.5rem 1.25rem;
+                border-radius: 30px;
+                cursor: pointer;
+                font-size: 0.78rem;
+                letter-spacing: 0.06em;
+                transition: all 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .auth-btn:hover {
+                border-color: var(--gold);
+                color: var(--gold2);
+            }
+            .cart-btn {
+                background: linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--rosegold)
+                );
+                color: white;
+                padding: 0.5rem 1.25rem;
+                border-radius: 30px;
+                border: none;
+                cursor: pointer;
+                font-size: 0.78rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                letter-spacing: 0.06em;
+                transition: all 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .cart-btn:hover {
+                opacity: 0.85;
+                transform: translateY(-1px);
+            }
+            .cart-count {
+                background: rgba(255, 255, 255, 0.25);
+                border-radius: 50%;
+                width: 18px;
+                height: 18px;
+                font-size: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 500;
+            }
+
+            /* HERO */
+            .hero {
+                position: relative;
+                height: 100vh;
+                min-height: 750px;
+                display: flex;
+                align-items: center;
+                overflow: hidden;
+            }
+            .hero-bg {
+                position: absolute;
+                inset: 0;
+            }
+            .hero-bg img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: brightness(0.3);
+            }
+            .hero-gradient {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    135deg,
+                    rgba(8, 6, 14, 0.85) 0%,
+                    rgba(123, 63, 160, 0.2) 50%,
+                    rgba(8, 6, 14, 0.6) 100%
+                );
+            }
+            .hero-particles {
+                position: absolute;
+                inset: 0;
+                overflow: hidden;
+            }
+            .particle {
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: var(--gold);
+                border-radius: 50%;
+                opacity: 0;
+                animation: float linear infinite;
+            }
+            @keyframes float {
+                0% {
+                    opacity: 0;
+                    transform: translateY(100vh);
+                }
+                10% {
+                    opacity: 0.6;
+                }
+                90% {
+                    opacity: 0.6;
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateY(-10vh);
+                }
+            }
+            .hero-content {
+                position: relative;
+                z-index: 1;
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 4rem;
+                width: 100%;
+            }
+            .hero-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.6rem;
+                background: rgba(201, 169, 110, 0.1);
+                border: 1px solid rgba(201, 169, 110, 0.3);
+                color: var(--gold2);
+                padding: 0.45rem 1.1rem;
+                border-radius: 30px;
+                font-size: 0.72rem;
+                letter-spacing: 0.15em;
+                margin-bottom: 2rem;
+                text-transform: uppercase;
+                opacity: 0;
+                animation: fadeUp 0.8s ease 2s forwards;
+                margin-top: 5rem;
+            }
+            .hero-tag::before {
+                content: "✦";
+                font-size: 0.6rem;
+            }
+            .hero h1 {
+                font-family: "Cormorant Garamond", serif;
+                font-size: clamp(2.5rem, 5vw, 4.2rem);
+                font-weight: 300;
+                line-height: 1.15;
+                margin-bottom: 1.5rem;
+                letter-spacing: -0.01em;
+                opacity: 0;
+                animation: fadeUp 0.8s ease 2.2s forwards;
+            }
+            .hero h1 em {
+                font-style: italic;
+                color: var(--gold2);
+                display: block;
+            }
+            .hero-sub {
+                color: rgba(240, 234, 248, 0.65);
+                font-size: 1rem;
+                line-height: 1.85;
+                max-width: 500px;
+                margin-bottom: 3rem;
+                font-weight: 300;
+                opacity: 0;
+                animation: fadeUp 0.8s ease 2.4s forwards;
+            }
+            .hero-btns {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+                opacity: 0;
+                animation: fadeUp 0.8s ease 2.6s forwards;
+            }
+            .btn-gold {
+                background: linear-gradient(
+                    135deg,
+                    var(--gold),
+                    var(--rosegold)
+                );
+                color: #08060e;
+                padding: 0.9rem 2.25rem;
+                border-radius: 30px;
+                border: none;
+                cursor: pointer;
+                font-size: 0.85rem;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                transition: all 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .btn-gold:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(201, 169, 110, 0.35);
+            }
+            .btn-ghost {
+                background: transparent;
+                color: var(--text);
+                padding: 0.9rem 2.25rem;
+                border-radius: 30px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                cursor: pointer;
+                font-size: 0.85rem;
+                letter-spacing: 0.08em;
+                transition: all 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .btn-ghost:hover {
+                border-color: rgba(255, 255, 255, 0.5);
+                background: rgba(255, 255, 255, 0.05);
+            }
+            .hero-scroll {
+                position: absolute;
+                bottom: 2.5rem;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.6rem;
+                color: var(--muted);
+                font-size: 0.68rem;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                opacity: 0;
+                animation: fadeUp 0.6s ease 3s forwards;
+            }
+            .scroll-line {
+                width: 1px;
+                height: 50px;
+                background: linear-gradient(
+                    to bottom,
+                    var(--gold),
+                    transparent
+                );
+                animation: scrollPulse 2s ease infinite;
+            }
+            @keyframes scrollPulse {
+                0%,
+                100% {
+                    opacity: 0.3;
+                    transform: scaleY(1);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scaleY(1.1);
+                }
+            }
+
+            /* MARQUEE */
+            .marquee-wrap {
+                background: linear-gradient(
+                    135deg,
+                    rgba(123, 63, 160, 0.15),
+                    rgba(192, 144, 112, 0.1)
+                );
+                border-top: 1px solid var(--border);
+                border-bottom: 1px solid var(--border);
+                padding: 1rem 0;
+                overflow: hidden;
+            }
+            .marquee {
+                display: flex;
+                gap: 3rem;
+                animation: marquee 25s linear infinite;
+                width: max-content;
+            }
+            .marquee-item {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                color: var(--muted);
+                font-size: 0.75rem;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+            .marquee-dot {
+                color: var(--gold);
+                font-size: 0.5rem;
+            }
+            @keyframes marquee {
+                from {
+                    transform: translateX(0);
+                }
+                to {
+                    transform: translateX(-50%);
+                }
+            }
+
+            /* STATS */
+            .stats-section {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 5rem 4rem;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1px;
+                background: var(--border);
+                border: 1px solid var(--border);
+            }
+            .stat-card {
+                background: var(--bg2);
+                padding: 2.5rem 2rem;
+                text-align: center;
+                transition: background 0.3s;
+                position: relative;
+                overflow: hidden;
+            }
+            .stat-card::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    135deg,
+                    rgba(123, 63, 160, 0.05),
+                    rgba(192, 144, 112, 0.05)
+                );
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            .stat-card:hover::before {
+                opacity: 1;
+            }
+            .stat-num {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 3rem;
+                font-weight: 400;
+                color: var(--gold2);
+                letter-spacing: 0.02em;
+                line-height: 1;
+            }
+            .stat-label {
+                font-size: 0.72rem;
+                color: var(--muted);
+                margin-top: 0.5rem;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+            }
+            .stat-divider {
+                width: 30px;
+                height: 1px;
+                background: var(--gold);
+                margin: 0.75rem auto 0;
+                opacity: 0.4;
+            }
+
+            /* SECTION HEADERS */
+            .section-wrap {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 4rem;
+            }
+            .section-header {
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                margin-bottom: 3rem;
+            }
+            .section-tag {
+                font-size: 0.7rem;
+                color: var(--gold);
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                margin-bottom: 0.6rem;
+            }
+            .section-title {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 2.8rem;
+                font-weight: 300;
+                color: var(--text);
+                line-height: 1.1;
+            }
+            .section-title em {
+                font-style: italic;
+                color: var(--rose2);
+            }
+
+            /* FILTERS */
+            .filters {
+                display: flex;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                margin-bottom: 2.5rem;
+            }
+            .filter-btn {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--muted);
+                padding: 0.5rem 1.25rem;
+                border-radius: 30px;
+                cursor: pointer;
+                font-size: 0.78rem;
+                letter-spacing: 0.06em;
+                transition: all 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .filter-btn.active,
+            .filter-btn:hover {
+                border-color: rgba(123, 63, 160, 0.6);
+                color: var(--rose2);
+                background: rgba(123, 63, 160, 0.1);
+            }
+
+            /* PRODUCT GRID */
+            .products-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 1px;
+                background: var(--border);
+                margin-bottom: 5rem;
+            }
+            .product-card {
+                background: var(--card);
+                cursor: pointer;
+                transition: background 0.3s;
+                position: relative;
+                overflow: hidden;
+                opacity: 0;
+                transform: translateY(20px);
+                transition:
+                    opacity 0.5s ease,
+                    transform 0.5s ease,
+                    background 0.3s;
+            }
+            .product-card.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .product-card:hover {
+                background: var(--bg2);
+            }
+            .card-img-wrap {
+                width: 100%;
+                height: 220px;
+                overflow: hidden;
+                position: relative;
+            }
+            .card-img-wrap img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: brightness(0.88);
+                transition:
+                    transform 0.7s ease,
+                    filter 0.3s;
+            }
+            .product-card:hover .card-img-wrap img {
+                transform: scale(1.06);
+                filter: brightness(0.95);
+            }
+            .img-skeleton {
+                position: absolute;
+                inset: 0;
+                background: var(--bg3);
+            }
+            .badge {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                padding: 0.28rem 0.75rem;
+                border-radius: 30px;
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                z-index: 1;
+            }
+            .badge.new {
+                background: var(--gold);
+                color: #08060e;
+            }
+            .badge.popular {
+                background: var(--rose);
+                color: #fff;
+            }
+            .badge.chef {
+                background: var(--purple2);
+                color: #fff;
+            }
+            .card-body {
+                padding: 1.5rem;
+            }
+            .card-cat {
+                font-size: 0.68rem;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+                margin-bottom: 0.4rem;
+            }
+            .card-name {
+                font-family: "Cormorant Garamond", serif;
+                font-weight: 500;
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem;
+                color: var(--text);
+            }
+            .card-desc {
+                font-size: 0.8rem;
+                color: var(--muted);
+                line-height: 1.65;
+                margin-bottom: 1.25rem;
+                font-weight: 300;
+            }
+            .card-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .old-price {
+                font-size: 0.75rem;
+                color: var(--muted);
+                text-decoration: line-through;
+            }
+            .price {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.3rem;
+                font-weight: 500;
+                color: var(--gold2);
+            }
+            .stars {
+                color: var(--gold);
+                font-size: 0.72rem;
+                margin-bottom: 0.4rem;
+                letter-spacing: 0.05em;
+            }
+            .add-btn {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--muted);
+                padding: 0.45rem 1rem;
+                border-radius: 30px;
+                cursor: pointer;
+                font-size: 0.75rem;
+                letter-spacing: 0.05em;
+                transition: all 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .add-btn:hover {
+                border-color: var(--gold);
+                color: var(--gold2);
+                background: rgba(201, 169, 110, 0.08);
+            }
+
+            /* EXPERIENCE */
+            .experience-section {
+                padding: 5rem 0;
+                background: var(--bg2);
+                border-top: 1px solid var(--border);
+                border-bottom: 1px solid var(--border);
+            }
+            .exp-header {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 4rem 3rem;
+            }
+            .exp-grid {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 4rem;
+            }
+            .exp-row1 {
+                display: grid;
+                grid-template-columns: 1.3fr 1fr;
+                gap: 4px;
+                height: 540px;
+            }
+            .exp-row2 {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+                height: 300px;
+                margin-top: 4px;
+            }
+            .exp-img {
+                position: relative;
+                overflow: hidden;
+            }
+            .exp-img img {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: brightness(0.82);
+                transition:
+                    transform 0.7s ease,
+                    filter 0.4s;
+            }
+            .exp-img:hover img {
+                transform: scale(1.05);
+                filter: brightness(0.92);
+            }
+            .exp-stacked {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .exp-stacked .exp-img {
+                flex: 1;
+            }
+            .exp-label {
+                position: absolute;
+                bottom: 1.25rem;
+                left: 1.25rem;
+                background: rgba(8, 6, 14, 0.85);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(201, 169, 110, 0.2);
+                padding: 0.85rem 1.1rem;
+                border-radius: 4px;
+            }
+            .exp-label-tag {
+                font-size: 0.62rem;
+                color: var(--gold);
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                margin-bottom: 0.2rem;
+            }
+            .exp-label-title {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 0.95rem;
+                color: var(--text);
+            }
+
+            /* QUOTE */
+            .quote-section {
+                max-width: 700px;
+                margin: 5rem auto;
+                padding: 0 4rem;
+                text-align: center;
+            }
+            .quote-mark {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 5rem;
+                color: var(--gold);
+                opacity: 0.2;
+                line-height: 0.5;
+                margin-bottom: 2rem;
+            }
+            .quote-text {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.6rem;
+                font-weight: 300;
+                color: var(--text);
+                line-height: 1.65;
+                font-style: italic;
+            }
+            .quote-author {
+                font-size: 0.72rem;
+                color: var(--muted);
+                margin-top: 1.5rem;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+            }
+
+            /* TESTIMONIALS */
+            .testimonials-section {
+                padding: 5rem 0;
+                background: var(--bg);
+            }
+            .testimonials-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1px;
+                background: var(--border);
+                margin-top: 3rem;
+            }
+            .testimonial-card {
+                background: var(--card);
+                padding: 2.5rem;
+                transition: background 0.3s;
+                position: relative;
+            }
+            .testimonial-card:hover {
+                background: var(--bg2);
+            }
+            .testimonial-card::before {
+                content: "❝";
+                font-family: "Cormorant Garamond", serif;
+                font-size: 4rem;
+                color: var(--gold);
+                opacity: 0.15;
+                position: absolute;
+                top: 1.5rem;
+                right: 1.5rem;
+                line-height: 1;
+            }
+            .testimonial-stars {
+                color: var(--gold);
+                font-size: 0.82rem;
+                margin-bottom: 1rem;
+                letter-spacing: 0.08em;
+            }
+            .testimonial-text {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.05rem;
+                font-weight: 300;
+                color: var(--text);
+                line-height: 1.75;
+                font-style: italic;
+                margin-bottom: 1.5rem;
+            }
+            .testimonial-author {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            .author-avatar {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 1px solid var(--border);
+                filter: brightness(0.9);
+            }
+            .author-info {
+            }
+            .author-name {
+                font-size: 0.85rem;
+                color: var(--text);
+                font-weight: 500;
+            }
+            .author-loc {
+                font-size: 0.72rem;
+                color: var(--muted);
+                letter-spacing: 0.05em;
+                margin-top: 0.15rem;
+            }
+
+            /* AI SECTION */
+            .ai-section {
+                max-width: 1400px;
+                margin: 5rem auto;
+                padding: 0 4rem;
+            }
+            .ai-wrap {
+                background: var(--bg2);
+                border: 1px solid var(--border);
+                padding: 3rem;
+                position: relative;
+                overflow: hidden;
+            }
+            .ai-wrap::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                right: -10%;
+                width: 400px;
+                height: 400px;
+                background: radial-gradient(
+                    circle,
+                    rgba(123, 63, 160, 0.08),
+                    transparent 70%
+                );
+                pointer-events: none;
+            }
+            .ai-inner-tag {
+                font-size: 0.7rem;
+                color: var(--gold);
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .ai-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--rose2);
+                animation: pulse 2s infinite;
+            }
+            @keyframes pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+                50% {
+                    opacity: 0.3;
+                    transform: scale(1.4);
+                }
+            }
+            .ai-title {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 2rem;
+                font-weight: 300;
+                color: var(--text);
+                margin-bottom: 0.5rem;
+            }
+            .ai-sub {
+                color: var(--muted);
+                font-size: 0.85rem;
+                margin-bottom: 2rem;
+                font-weight: 300;
+            }
+            .ai-input-row {
+                display: flex;
+                gap: 0.75rem;
+            }
+            .ai-input {
+                flex: 1;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 1rem 1.25rem;
+                font-size: 0.88rem;
+                outline: none;
+                font-family: "Inter", sans-serif;
+                font-weight: 300;
+                transition: border-color 0.3s;
+            }
+            .ai-input::placeholder {
+                color: var(--muted);
+            }
+            .ai-input:focus {
+                border-color: rgba(123, 63, 160, 0.5);
+            }
+            .ai-send {
+                background: linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--rosegold)
+                );
+                color: white;
+                border: none;
+                padding: 1rem 1.75rem;
+                cursor: pointer;
+                font-size: 0.82rem;
+                letter-spacing: 0.08em;
+                white-space: nowrap;
+                transition: opacity 0.3s;
+                font-family: "Inter", sans-serif;
+            }
+            .ai-send:hover {
+                opacity: 0.85;
+            }
+            .ai-response {
+                margin-top: 1.5rem;
+                padding: 1.5rem;
+                border-left: 2px solid var(--purple2);
+                background: rgba(123, 63, 160, 0.05);
+                font-size: 0.88rem;
+                line-height: 1.85;
+                color: var(--muted);
+                display: none;
+                font-weight: 300;
+            }
+
+            /* NEWSLETTER */
+            .newsletter-section {
+                background: linear-gradient(
+                    135deg,
+                    var(--purple3),
+                    rgba(192, 144, 112, 0.08)
+                );
+                border-top: 1px solid var(--border);
+                border-bottom: 1px solid var(--border);
+                padding: 5rem 4rem;
+                text-align: center;
+            }
+            .newsletter-tag {
+                font-size: 0.7rem;
+                color: var(--gold);
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                margin-bottom: 1rem;
+            }
+            .newsletter-title {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 2.8rem;
+                font-weight: 300;
+                color: var(--text);
+                margin-bottom: 1rem;
+            }
+            .newsletter-title em {
+                font-style: italic;
+                color: var(--rose2);
+            }
+            .newsletter-sub {
+                color: var(--muted);
+                font-size: 0.9rem;
+                margin-bottom: 2.5rem;
+                font-weight: 300;
+                max-width: 450px;
+                margin-left: auto;
+                margin-right: auto;
+                line-height: 1.7;
+            }
+            .newsletter-form {
+                display: flex;
+                gap: 0;
+                max-width: 480px;
+                margin: 0 auto;
+            }
+            .newsletter-input {
+                flex: 1;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--border);
+                border-right: none;
+                color: var(--text);
+                padding: 0.9rem 1.25rem;
+                font-size: 0.88rem;
+                outline: none;
+                font-family: "Inter", sans-serif;
+            }
+            .newsletter-input::placeholder {
+                color: var(--muted);
+            }
+            .newsletter-input:focus {
+                border-color: rgba(123, 63, 160, 0.5);
+            }
+            .newsletter-btn {
+                background: linear-gradient(
+                    135deg,
+                    var(--gold),
+                    var(--rosegold)
+                );
+                color: #08060e;
+                border: none;
+                padding: 0.9rem 1.75rem;
+                font-size: 0.82rem;
+                font-weight: 500;
+                cursor: pointer;
+                letter-spacing: 0.06em;
+                transition: opacity 0.3s;
+                font-family: "Inter", sans-serif;
+                white-space: nowrap;
+            }
+            .newsletter-btn:hover {
+                opacity: 0.85;
+            }
+            .newsletter-note {
+                font-size: 0.72rem;
+                color: var(--muted);
+                margin-top: 1rem;
+                letter-spacing: 0.04em;
+            }
+
+            /* AUTH MODAL */
+            .modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 300;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(10px);
+            }
+            .modal-overlay.open {
+                display: flex;
+            }
+            .modal {
+                background: var(--bg2);
+                border: 1px solid var(--border);
+                padding: 2.5rem;
+                width: 100%;
+                max-width: 400px;
+                position: relative;
+                margin: 1rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .modal-close {
+                position: absolute;
+                top: 1.25rem;
+                right: 1.25rem;
+                background: none;
+                border: none;
+                color: var(--muted);
+                cursor: pointer;
+                font-size: 1rem;
+                line-height: 1;
+                transition: color 0.2s;
+            }
+            .modal-close:hover {
+                color: var(--text);
+            }
+            .modal-logo {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.4rem;
+                font-weight: 300;
+                letter-spacing: 0.1em;
+                color: var(--text);
+                text-align: center;
+                margin-bottom: 0.25rem;
+            }
+            .modal-logo em {
+                font-style: italic;
+                color: var(--gold);
+            }
+            .modal-sub {
+                text-align: center;
+                color: var(--muted);
+                font-size: 0.78rem;
+                margin-bottom: 2rem;
+                letter-spacing: 0.05em;
+            }
+            .tab-btns {
+                display: flex;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 1.75rem;
+            }
+            .tab-btn {
+                flex: 1;
+                padding: 0.65rem;
+                border: none;
+                background: transparent;
+                color: var(--muted);
+                font-size: 0.78rem;
+                cursor: pointer;
+                letter-spacing: 0.08em;
+                border-bottom: 2px solid transparent;
+                margin-bottom: -1px;
+                transition: all 0.2s;
+                font-family: "Inter", sans-serif;
+                text-transform: uppercase;
+            }
+            .tab-btn.active {
+                color: var(--gold2);
+                border-bottom-color: var(--gold);
+            }
+            .form-group {
+                margin-bottom: 1.1rem;
+            }
+            .form-group label {
+                display: block;
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 0.4rem;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+            }
+            .form-group input {
+                width: 100%;
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+                outline: none;
+                font-family: "Inter", sans-serif;
+                transition: border-color 0.2s;
+            }
+            .form-group input::placeholder {
+                color: var(--muted);
+                font-weight: 300;
+            }
+            .form-group input:focus {
+                border-color: rgba(123, 63, 160, 0.5);
+            }
+            .form-submit {
+                width: 100%;
+                background: linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--rosegold)
+                );
+                color: white;
+                border: none;
+                padding: 0.9rem;
+                font-size: 0.85rem;
+                cursor: pointer;
+                letter-spacing: 0.08em;
+                margin-top: 0.5rem;
+                transition: opacity 0.2s;
+                font-family: "Inter", sans-serif;
+                text-transform: uppercase;
+            }
+            .form-submit:hover {
+                opacity: 0.88;
+            }
+            .otp-section {
+                display: none;
+            }
+            .otp-inputs {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: center;
+                margin: 1.25rem 0;
+            }
+            .otp-input {
+                width: 44px;
+                height: 52px;
+                text-align: center;
+                border: 1px solid var(--border);
+                font-size: 1.2rem;
+                font-weight: 400;
+                color: var(--text);
+                background: rgba(255, 255, 255, 0.04);
+                outline: none;
+                font-family: "Cormorant Garamond", serif;
+                transition: border-color 0.2s;
+            }
+            .otp-input:focus {
+                border-color: rgba(123, 63, 160, 0.6);
+            }
+            .otp-note {
+                text-align: center;
+                font-size: 0.78rem;
+                color: var(--muted);
+                margin-bottom: 0.5rem;
+                line-height: 1.6;
+            }
+            .otp-demo {
+                background: rgba(201, 169, 110, 0.08);
+                border: 1px solid rgba(201, 169, 110, 0.2);
+                color: var(--gold2);
+                padding: 0.6rem 1rem;
+                text-align: center;
+                font-size: 0.82rem;
+                margin-bottom: 1rem;
+                letter-spacing: 0.05em;
+            }
+            .success-msg {
+                display: none;
+                text-align: center;
+                padding: 1rem;
+                background: rgba(123, 63, 160, 0.1);
+                border: 1px solid rgba(123, 63, 160, 0.3);
+                color: var(--rose2);
+                font-size: 0.85rem;
+                margin-top: 1rem;
+            }
+            .divider {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin: 1.25rem 0;
+                color: var(--muted);
+                font-size: 0.72rem;
+                letter-spacing: 0.08em;
+            }
+            .divider::before,
+            .divider::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: var(--border);
+            }
+            .social-btn {
+                width: 100%;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid var(--border);
+                color: var(--muted);
+                padding: 0.75rem;
+                font-size: 0.8rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                transition: all 0.2s;
+                margin-bottom: 0.75rem;
+                letter-spacing: 0.05em;
+                font-family: "Inter", sans-serif;
+            }
+            .social-btn:hover {
+                border-color: rgba(123, 63, 160, 0.5);
+                color: var(--text);
+            }
+            .error-msg {
+                color: #e88a8a;
+                font-size: 0.72rem;
+                margin-top: 0.3rem;
+                display: none;
+                letter-spacing: 0.03em;
+            }
+
+            /* CART */
+            .cart-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 200;
+                display: none;
+                backdrop-filter: blur(6px);
+            }
+            .cart-sidebar {
+                position: fixed;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 400px;
+                background: var(--bg2);
+                border-left: 1px solid var(--border);
+                z-index: 201;
+                transform: translateX(100%);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex;
+                flex-direction: column;
+            }
+            .cart-sidebar.open {
+                transform: translateX(0);
+            }
+            .cart-overlay.open {
+                display: block;
+            }
+            .cart-head {
+                padding: 1.75rem 2rem;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .cart-head h3 {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.2rem;
+                font-weight: 300;
+                color: var(--text);
+                letter-spacing: 0.08em;
+            }
+            .close-cart {
+                background: none;
+                border: none;
+                color: var(--muted);
+                cursor: pointer;
+                font-size: 1.1rem;
+                transition: color 0.2s;
+            }
+            .close-cart:hover {
+                color: var(--text);
+            }
+            .cart-items {
+                flex: 1;
+                overflow-y: auto;
+                padding: 1.5rem 2rem;
+            }
+            .cart-item {
+                display: flex;
+                gap: 1rem;
+                padding: 1rem 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .ci-img {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                flex-shrink: 0;
+                filter: brightness(0.88);
+            }
+            .ci-info {
+                flex: 1;
+            }
+            .ci-name {
+                font-size: 0.88rem;
+                color: var(--text);
+                margin-bottom: 0.25rem;
+            }
+            .ci-price {
+                color: var(--gold2);
+                font-size: 0.88rem;
+                font-family: "Cormorant Garamond", serif;
+            }
+            .ci-qty {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-top: 0.5rem;
+            }
+            .qty-btn {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--border);
+                color: var(--muted);
+                width: 26px;
+                height: 26px;
+                cursor: pointer;
+                font-size: 0.88rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            }
+            .qty-btn:hover {
+                border-color: var(--gold);
+                color: var(--gold2);
+            }
+            .qty-num {
+                font-size: 0.85rem;
+                min-width: 22px;
+                text-align: center;
+                color: var(--text);
+            }
+            .remove-btn {
+                background: none;
+                border: none;
+                color: var(--muted);
+                cursor: pointer;
+                font-size: 0.9rem;
+                margin-left: auto;
+                transition: color 0.2s;
+            }
+            .remove-btn:hover {
+                color: #e88a8a;
+            }
+            .cart-footer {
+                padding: 1.75rem 2rem;
+                border-top: 1px solid var(--border);
+            }
+            .cart-total-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 1.25rem;
+                align-items: baseline;
+            }
+            .cart-total-label {
+                color: var(--muted);
+                font-size: 0.72rem;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+            }
+            .cart-total-val {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.5rem;
+                color: var(--gold2);
+            }
+            .checkout-btn {
+                width: 100%;
+                background: linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--rosegold)
+                );
+                color: white;
+                border: none;
+                padding: 1rem;
+                font-size: 0.85rem;
+                cursor: pointer;
+                letter-spacing: 0.08em;
+                transition: opacity 0.2s;
+                font-family: "Inter", sans-serif;
+                text-transform: uppercase;
+            }
+            .checkout-btn:hover {
+                opacity: 0.85;
+            }
+            .cart-empty {
+                text-align: center;
+                padding: 4rem 1rem;
+                color: var(--muted);
+            }
+            .cart-empty-icon {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+                opacity: 0.4;
+                font-family: "Cormorant Garamond", serif;
+            }
+
+            /* FOOTER */
+            footer {
+                background: var(--bg2);
+                border-top: 1px solid var(--border);
+                padding: 4rem;
+                display: grid;
+                grid-template-columns: 1.5fr 1fr 1fr 1fr;
+                gap: 3rem;
+            }
+            .footer-brand {
+            }
+            .footer-logo {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 1.5rem;
+                font-weight: 300;
+                letter-spacing: 0.1em;
+                color: var(--text);
+                margin-bottom: 1rem;
+            }
+            .footer-logo em {
+                font-style: italic;
+                color: var(--gold);
+            }
+            .footer-desc {
+                font-size: 0.82rem;
+                color: var(--muted);
+                line-height: 1.75;
+                font-weight: 300;
+                max-width: 260px;
+            }
+            .footer-col h4 {
+                font-size: 0.7rem;
+                color: var(--gold);
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                margin-bottom: 1.25rem;
+            }
+            .footer-col ul {
+                list-style: none;
+            }
+            .footer-col ul li {
+                margin-bottom: 0.65rem;
+            }
+            .footer-col ul a {
+                color: var(--muted);
+                text-decoration: none;
+                font-size: 0.82rem;
+                transition: color 0.2s;
+                letter-spacing: 0.03em;
+            }
+            .footer-col ul a:hover {
+                color: var(--text);
+            }
+            .footer-bottom {
+                background: var(--bg);
+                border-top: 1px solid var(--border);
+                padding: 1.5rem 4rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .footer-copy {
+                font-size: 0.75rem;
+                color: var(--muted);
+                letter-spacing: 0.06em;
+            }
+            .footer-socials {
+                display: flex;
+                gap: 1rem;
+            }
+            .footer-socials a {
+                color: var(--muted);
+                font-size: 0.75rem;
+                letter-spacing: 0.06em;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+            .footer-socials a:hover {
+                color: var(--gold2);
+            }
+
+            /* TOAST */
+            .toast {
+                position: fixed;
+                bottom: 2rem;
+                left: 50%;
+                transform: translateX(-50%) translateY(80px);
+                background: var(--bg2);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 0.85rem 1.75rem;
+                font-size: 0.82rem;
+                z-index: 500;
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                pointer-events: none;
+                letter-spacing: 0.05em;
+                white-space: nowrap;
+            }
+            .toast.show {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            /* SCROLL REVEAL */
+            .reveal {
+                opacity: 0;
+                transform: translateY(30px);
+                transition:
+                    opacity 0.7s ease,
+                    transform 0.7s ease;
+            }
+            .reveal.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        </style>
+    </head>
+    <body>
+        <!-- LOADER -->
+        <div class="loader" id="loader">
+            <div class="loader-logo">Lumiè<span>re</span></div>
+            <div class="loader-line"></div>
+            <div class="loader-sub">Premium Dining Experience</div>
+        </div>
+
+        <!-- NAV -->
+        <nav id="navbar">
+            <div class="nav-inner">
+                <a class="logo" href="#">Lumiè<em>re</em></a>
+                <ul class="nav-links">
+                    <li>
+                        <a
+                            href="#"
+                            onclick="
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                return false;
+                            "
+                            >Home</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                            href="#"
+                            onclick="
+                                document
+                                    .getElementById('menuSection')
+                                    .scrollIntoView({ behavior: 'smooth' });
+                                return false;
+                            "
+                            >Menu</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                            href="#"
+                            onclick="
+                                document
+                                    .getElementById('experienceSection')
+                                    .scrollIntoView({ behavior: 'smooth' });
+                                return false;
+                            "
+                            >Experience</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                            href="#"
+                            onclick="
+                                document
+                                    .getElementById('footerSection')
+                                    .scrollIntoView({ behavior: 'smooth' });
+                                return false;
+                            "
+                            >Contact</a
+                        >
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <div class="search-wrap">
+                        <span class="search-icon">⌕</span>
+                        <input
+                            class="search-bar"
+                            placeholder="Search menu..."
+                            id="searchInput"
+                            oninput="filterProducts()"
+                        />
+                    </div>
+                    <button
+                        class="auth-btn"
+                        id="authNavBtn"
+                        onclick="openModal()"
+                    >
+                        Sign In
+                    </button>
+                    <button class="cart-btn" onclick="toggleCart()">
+                        ✦ Cart <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <div class="hero">
+            <div class="hero-bg">
+                <img
+                    src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=85"
+                    alt="Fine dining"
+                />
+            </div>
+            <div class="hero-gradient"></div>
+            <div class="hero-particles" id="particles"></div>
+            <div class="hero-content">
+                <div class="hero-tag">Curated Fine Dining Experience</div>
+                <h1>Where Every Meal<br />Becomes a<em>Memory</em></h1>
+                <p class="hero-sub">
+                    Premium ingredients, artisan preparation, and flavors that
+                    linger long after the last bite. Delivered with the grace of
+                    a five-star experience.
+                </p>
+                <div class="hero-btns">
+                    <button
+                        class="btn-gold"
+                        onclick="
+                            document
+                                .getElementById('menuSection')
+                                .scrollIntoView({ behavior: 'smooth' })
+                        "
+                    >
+                        Explore Menu
+                    </button>
+                    <button
+                        class="btn-ghost"
+                        onclick="
+                            document
+                                .getElementById('aiSection')
+                                .scrollIntoView({ behavior: 'smooth' })
+                        "
+                    >
+                        Ask Chef AI
+                    </button>
+                </div>
+            </div>
+            <div class="hero-scroll">
+                <div class="scroll-line"></div>
+                <span>Discover</span>
+            </div>
+        </div>
+
+        <!-- MARQUEE -->
+        <div class="marquee-wrap">
+            <div class="marquee">
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Farm to Table
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Artisan Crafted
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Michelin Inspired
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Organic Ingredients
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Premium Experience
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Chef's Selection
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Fine Dining
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Farm to Table
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Artisan Crafted
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Michelin Inspired
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Organic Ingredients
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Premium Experience
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Chef's Selection
+                </div>
+                <div class="marquee-item">
+                    <span class="marquee-dot">✦</span>Fine Dining
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-section reveal">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-num" id="s1">0</div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-label">Signature Dishes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="s2">0</div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-label">Guests Served</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="s3">0</div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-label">Cities Reached</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="s4">0</div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-label">Orders Today</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENU -->
+        <div
+            class="section-wrap"
+            id="menuSection"
+            style="padding-top: 5rem; padding-bottom: 0"
+        >
+            <div class="section-header reveal">
+                <div>
+                    <div class="section-tag">✦ Our Collection</div>
+                    <div class="section-title">The <em>Menu</em></div>
+                </div>
+            </div>
+            <div class="filters reveal">
+                <button
+                    class="filter-btn active"
+                    onclick="setFilter('all', this)"
+                >
+                    All
+                </button>
+                <button class="filter-btn" onclick="setFilter('salads', this)">
+                    Salads
+                </button>
+                <button class="filter-btn" onclick="setFilter('mains', this)">
+                    Mains
+                </button>
+                <button class="filter-btn" onclick="setFilter('pasta', this)">
+                    Pasta
+                </button>
+                <button class="filter-btn" onclick="setFilter('pizza', this)">
+                    Pizza
+                </button>
+                <button
+                    class="filter-btn"
+                    onclick="setFilter('desserts', this)"
+                >
+                    Desserts
+                </button>
+                <button class="filter-btn" onclick="setFilter('drinks', this)">
+                    Drinks
+                </button>
+            </div>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+
+        <!-- EXPERIENCE -->
+        <div class="experience-section" id="experienceSection">
+            <div class="exp-header reveal">
+                <div class="section-tag">✦ Behind The Scenes</div>
+                <div class="section-title">The <em>Experience</em></div>
+            </div>
+            <div class="exp-grid reveal">
+                <div class="exp-row1">
+                    <div class="exp-img">
+                        <img
+                            src="https://images.unsplash.com/photo-1577219492769-b63a779fac28?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjE1fHxvdXIlMjByZXN0YXVyYW50JTIwa2l0Y2hlbiUyMGhkJTIwaW1nc3xlbnwwfHwwfHx8MA%3D%3D"
+                            alt="Kitchen"
+                        />
+                        <div class="exp-label">
+                            <div class="exp-label-tag">Our Kitchen</div>
+                            <div class="exp-label-title">
+                                Where magic begins
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exp-stacked">
+                        <div class="exp-img">
+                            <img
+                                src="https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=700&q=85"
+                                alt="Plating"
+                            />
+                            <div class="exp-label">
+                                <div class="exp-label-tag">Artisan Craft</div>
+                                <div class="exp-label-title">
+                                    Every plate, a masterpiece
+                                </div>
+                            </div>
+                        </div>
+                        <div class="exp-img">
+                            <img
+                                src="https://images.unsplash.com/photo-1576723664541-23f84c3f93fb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OTV8fHJlc3RhdXJhbnQlMjBkaW5uaW5nJTIwcm9vbSUyMGhkJTIwaW1nc3xlbnwwfHwwfHx8MA%3D%3D"
+                                alt="Dining"
+                            />
+                            <div class="exp-label">
+                                <div class="exp-label-tag">Dining Room</div>
+                                <div class="exp-label-title">
+                                    Elegance in every detail
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="exp-row2">
+                    <div class="exp-img">
+                        <img
+                            src="https://images.unsplash.com/photo-1744413922991-0c2ea966b1fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODB8fDE1JTIwZXhwZXJ0cyUyMGNoZWYlMjB0ZWFtcyUyMGhkJTIwaW1nc3xlbnwwfHwwfHx8MA%3D%3D"
+                            alt="Team"
+                        />
+                        <div class="exp-label">
+                            <div class="exp-label-tag">Our Team</div>
+                            <div class="exp-label-title">15 expert chefs</div>
+                        </div>
+                    </div>
+                    <div class="exp-img">
+                        <img
+                            src="https://images.unsplash.com/photo-1720443000468-89d509202615?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjA4fHxpbmdyZWRpZW50cyUyMGZhcm0lMjB0byUyMHRhYmxlJTIwZGFpbHklMjBpbiUyMHJlc3RhdXJhbnQlMjBraXRjaGVuJTIwaGQlMjBpbWdzfGVufDB8fDB8fHww"
+                            alt="Ingredients"
+                        />
+                        <div class="exp-label">
+                            <div class="exp-label-tag">Ingredients</div>
+                            <div class="exp-label-title">
+                                Farm to table daily
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exp-img">
+                        <img
+                            src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=85"
+                            alt="Ambience"
+                        />
+                        <div class="exp-label">
+                            <div class="exp-label-tag">Ambience</div>
+                            <div class="exp-label-title">
+                                Unforgettable evenings
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="quote-section reveal">
+                <div class="quote-mark">❝</div>
+                <div class="quote-text">
+                    Cooking is not merely a craft — it is the art of
+                    transforming the finest ingredients into memories that
+                    endure a lifetime.
+                </div>
+                <div class="quote-author">
+                    — Chef Antoine Laurent, Head Chef & Founder
+                </div>
+            </div>
+        </div>
+
+        <!-- TESTIMONIALS -->
+        <div class="testimonials-section">
+            <div class="section-wrap">
+                <div class="section-header reveal">
+                    <div>
+                        <div class="section-tag">✦ Guest Stories</div>
+                        <div class="section-title">
+                            What Our <em>Guests</em> Say
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonials-grid reveal">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <div class="testimonial-text">
+                            "An extraordinary evening. The Wagyu steak was
+                            unlike anything I have experienced — the truffle
+                            butter melted effortlessly into every bite. Lumière
+                            has redefined fine dining for me."
+                        </div>
+                        <div class="testimonial-author">
+                            <img
+                                class="author-avatar"
+                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80"
+                                alt="Sarah"
+                            />
+                            <div class="author-info">
+                                <div class="author-name">Sarah Mitchell</div>
+                                <div class="author-loc">New York, USA</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <div class="testimonial-text">
+                            "The lobster pasta was absolute perfection. Saffron
+                            cream sauce, butter-poached lobster — I closed my
+                            eyes and felt transported to the Amalfi Coast. Truly
+                            world-class cuisine."
+                        </div>
+                        <div class="testimonial-author">
+                            <img
+                                class="author-avatar"
+                                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80"
+                                alt="James"
+                            />
+                            <div class="author-info">
+                                <div class="author-name">James Whitfield</div>
+                                <div class="author-loc">London, UK</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <div class="testimonial-text">
+                            "From the moment we arrived, every detail was
+                            immaculate. The Valrhona lava cake was the most
+                            indulgent dessert I have ever tasted. We will
+                            absolutely return for every special occasion."
+                        </div>
+                        <div class="testimonial-author">
+                            <img
+                                class="author-avatar"
+                                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80"
+                                alt="Priya"
+                            />
+                            <div class="author-info">
+                                <div class="author-name">Priya Sharma</div>
+                                <div class="author-loc">Dubai, UAE</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI -->
+        <div class="ai-section" id="aiSection">
+            <div class="ai-wrap reveal">
+                <div class="ai-inner-tag">
+                    <div class="ai-dot"></div>
+                    AI Concierge · Powered by Groq
+                </div>
+                <div class="ai-title">Let our Chef guide your choice</div>
+                <div class="ai-sub">
+                    Ask anything — dietary preferences, wine pairings, or
+                    tonight's recommendation.
+                </div>
+                <div class="ai-input-row">
+                    <input
+                        class="ai-input"
+                        id="aiQuery"
+                        placeholder="'Suggest a light dinner for two' or 'Best dish for a special occasion?'"
+                        onkeydown="if (event.key === 'Enter') askAI();"
+                    />
+                    <button class="ai-send" onclick="askAI()">Ask ✦</button>
+                </div>
+                <div class="ai-response" id="aiResponse"></div>
+            </div>
+        </div>
+
+        <!-- NEWSLETTER -->
+        <div class="newsletter-section reveal">
+            <div class="newsletter-tag">✦ Stay Connected</div>
+            <div class="newsletter-title">Join the Lumière <em>Circle</em></div>
+            <div class="newsletter-sub">
+                Receive exclusive seasonal menus, chef's table invitations, and
+                first access to our private dining events.
+            </div>
+            <div class="newsletter-form">
+                <input
+                    class="newsletter-input"
+                    id="newsletterEmail"
+                    placeholder="Your email address"
+                    type="email"
+                />
+                <button class="newsletter-btn" onclick="subscribeNewsletter()">
+                    Subscribe
+                </button>
+            </div>
+            <div class="newsletter-note">
+                ✦ No spam, ever. Unsubscribe at any time.
+            </div>
+        </div>
+
+        <!-- AUTH MODAL -->
+        <div class="modal-overlay" id="authModal">
+            <div class="modal">
+                <button class="modal-close" onclick="closeModal()">✕</button>
+                <div class="modal-logo">Lumiè<em>re</em></div>
+                <div class="modal-sub">A premium dining experience awaits</div>
+                <div class="tab-btns">
+                    <button
+                        class="tab-btn active"
+                        onclick="switchTab('login', this)"
+                    >
+                        Sign In
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('signup', this)">
+                        Create Account
+                    </button>
+                </div>
+                <div id="loginForm">
+                    <button class="social-btn" onclick="socialLogin('Google')">
+                        ◉ Continue with Google
+                    </button>
+                    <button class="social-btn" onclick="socialLogin('Apple')">
+                        ⌘ Continue with Apple
+                    </button>
+                    <div class="divider">or</div>
+                    <div class="form-group">
+                        <label>Email</label
+                        ><input
+                            type="email"
+                            id="loginEmail"
+                            placeholder="your@email.com"
+                        />
+                        <div class="error-msg" id="loginEmailErr">
+                            Please enter a valid email
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label
+                        ><input
+                            type="password"
+                            id="loginPass"
+                            placeholder="••••••••"
+                        />
+                        <div class="error-msg" id="loginPassErr">
+                            Password is required
+                        </div>
+                    </div>
+                    <button class="form-submit" onclick="handleLogin()">
+                        Sign In & Verify
+                    </button>
+                </div>
+                <div id="signupForm" style="display: none">
+                    <button class="social-btn" onclick="socialLogin('Google')">
+                        ◉ Continue with Google
+                    </button>
+                    <div class="divider">or</div>
+                    <div class="form-group">
+                        <label>Full Name</label
+                        ><input
+                            type="text"
+                            id="signupName"
+                            placeholder="Your name"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label
+                        ><input
+                            type="email"
+                            id="signupEmail"
+                            placeholder="your@email.com"
+                        />
+                        <div class="error-msg" id="signupEmailErr">
+                            Please enter a valid email
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label
+                        ><input
+                            type="password"
+                            id="signupPass"
+                            placeholder="Min 8 characters"
+                        />
+                        <div class="error-msg" id="signupPassErr">
+                            Min 8 characters required
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone (for 2FA)</label
+                        ><input
+                            type="tel"
+                            id="signupPhone"
+                            placeholder="+92 300 0000000"
+                        />
+                    </div>
+                    <button class="form-submit" onclick="handleSignup()">
+                        Create Account
+                    </button>
+                </div>
+                <div class="otp-section" id="otpSection">
+                    <div class="otp-note" id="otpNote">
+                        A verification code has been sent to your email
+                    </div>
+                    <div class="otp-demo" id="otpDemo"></div>
+                    <div class="otp-inputs">
+                        <input
+                            class="otp-input"
+                            maxlength="1"
+                            id="o1"
+                            oninput="otpNext(this, 'o2')"
+                        />
+                        <input
+                            class="otp-input"
+                            maxlength="1"
+                            id="o2"
+                            oninput="otpNext(this, 'o3')"
+                        />
+                        <input
+                            class="otp-input"
+                            maxlength="1"
+                            id="o3"
+                            oninput="otpNext(this, 'o4')"
+                        />
+                        <input
+                            class="otp-input"
+                            maxlength="1"
+                            id="o4"
+                            oninput="otpNext(this, 'o5')"
+                        />
+                        <input
+                            class="otp-input"
+                            maxlength="1"
+                            id="o5"
+                            oninput="otpNext(this, 'o6')"
+                        />
+                        <input
+                            class="otp-input"
+                            maxlength="1"
+                            id="o6"
+                            oninput="otpNext(this, null)"
+                        />
+                    </div>
+                    <button class="form-submit" onclick="verifyOTP()">
+                        Verify Identity
+                    </button>
+                    <p
+                        style="
+                            text-align: center;
+                            font-size: 0.75rem;
+                            color: var(--muted);
+                            margin-top: 1rem;
+                            letter-spacing: 0.04em;
+                        "
+                    >
+                        Didn't receive?
+                        <a
+                            href="#"
+                            onclick="
+                                resendOTP();
+                                return false;
+                            "
+                            style="color: var(--gold2)"
+                            >Resend code</a
+                        >
+                    </p>
+                    <div class="success-msg" id="otpSuccess">
+                        ✦ Welcome to Lumière
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CART -->
+        <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+        <div class="cart-sidebar" id="cartSidebar">
+            <div class="cart-head">
+                <h3>Your Selection</h3>
+                <button class="close-cart" onclick="toggleCart()">✕</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <div class="cart-empty">
+                    <div class="cart-empty-icon">◎</div>
+                    Your cart is empty
+                </div>
+            </div>
+            <div class="cart-footer" id="cartFooter" style="display: none">
+                <div class="cart-total-row">
+                    <span class="cart-total-label">Total</span
+                    ><span class="cart-total-val" id="cartTotal">$0</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">
+                    Place Order ✦
+                </button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <!-- FOOTER -->
+        <footer id="footerSection">
+            <div class="footer-brand">
+                <div class="footer-logo">Lumiè<em>re</em></div>
+                <div class="footer-desc">
+                    A curated fine dining experience crafted for those who
+                    appreciate the extraordinary. Premium ingredients, artisan
+                    preparation, delivered with grace.
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Menu</h4>
+                <ul>
+                    <li><a href="#">Salads</a></li>
+                    <li><a href="#">Main Course</a></li>
+                    <li><a href="#">Pasta</a></li>
+                    <li><a href="#">Pizza</a></li>
+                    <li><a href="#">Desserts</a></li>
+                    <li><a href="#">Drinks</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Experience</h4>
+                <ul>
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Chef's Table</a></li>
+                    <li><a href="#">Private Dining</a></li>
+                    <li><a href="#">Events</a></li>
+                    <li><a href="#">Gift Cards</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="#">Reservations</a></li>
+                    <li><a href="#">Delivery</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </footer>
+        <div class="footer-bottom">
+            <div class="footer-copy">
+                © 2025 Lumière · All rights reserved · Premium Dining Experience
+            </div>
+            <div class="footer-socials">
+                <a href="#">Instagram</a>
+                <a href="#">Facebook</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+
+        <script>
+            // PRODUCTS DATA
+            const products = [
+                {
+                    id: 1,
+                    name: "Niçoise Salad",
+                    cat: "salads",
+                    img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=85",
+                    desc: "Seared tuna, olives, eggs, haricots verts & Dijon vinaigrette.",
+                    price: 16.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 1240,
+                },
+                {
+                    id: 2,
+                    name: "Burrata Salad",
+                    cat: "salads",
+                    img: "https://images.unsplash.com/photo-1608032077018-c9aad9565d29?w=600&q=85",
+                    desc: "Fresh burrata, heirloom tomatoes, basil oil & aged balsamic.",
+                    price: 18.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 3210,
+                },
+                {
+                    id: 3,
+                    name: "Quinoa Power Bowl",
+                    cat: "salads",
+                    img: "https://plus.unsplash.com/premium_photo-1690561082029-0eb2ed65a09f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHNhbGFkJTIwaW1nc3xlbnwwfHwwfHx8MA%3D%3Dhttps://images.unsplash.com/photo-1546069901855-f88d0b2b03cb?w=600&q=85",
+                    desc: "Tri-colour quinoa, roasted chickpeas, avocado & lemon tahini.",
+                    price: 14.99,
+                    old: 17.99,
+                    badge: "new",
+                    rating: 5,
+                    reviews: 892,
+                },
+                {
+                    id: 4,
+                    name: "Watermelon Feta",
+                    cat: "salads",
+                    img: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=85",
+                    desc: "Fresh watermelon, Greek feta, mint, cucumber & balsamic glaze.",
+                    price: 13.99,
+                    old: null,
+                    badge: "chef",
+                    rating: 4,
+                    reviews: 654,
+                },
+                {
+                    id: 5,
+                    name: "Greek Village Salad",
+                    cat: "salads",
+                    img: "https://plus.unsplash.com/premium_photo-1673590981774-d9f534e0c617?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8c2FsYWQlMjBpbWdzfGVufDB8fDB8fHww",
+                    desc: "Cucumber, olives, red onion, peppers, feta & oregano dressing.",
+                    price: 12.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 2100,
+                },
+                {
+                    id: 6,
+                    name: "Asian Sesame Salad",
+                    cat: "salads",
+                    img: "https://images.unsplash.com/photo-1757191872688-dec2183b8661?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTE1fHxzYWxhZCUyMGltZ3N8ZW58MHx8MHx8fDA%3D",
+                    desc: "Napa cabbage, edamame, mango, sesame dressing & crispy wonton.",
+                    price: 15.99,
+                    old: 18.99,
+                    badge: "new",
+                    rating: 5,
+                    reviews: 430,
+                },
+                {
+                    id: 7,
+                    name: "Avocado Arugula",
+                    cat: "salads",
+                    img: "https://images.unsplash.com/photo-1607532941433-304659e8198a?w=600&q=85",
+                    desc: "Fresh arugula, avocado slices, shaved parmesan & pine nuts.",
+                    price: 14.99,
+                    old: null,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 520,
+                },
+                {
+                    id: 8,
+                    name: "Roasted Beet Salad",
+                    cat: "salads",
+                    img: "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600&q=85",
+                    desc: "Roasted golden beets, goat cheese, walnuts & orange dressing.",
+                    price: 13.99,
+                    old: 16.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 345,
+                },
+                {
+                    id: 9,
+                    name: "Black Truffle Ramen",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=85",
+                    desc: "Rich umami broth, soft egg, bamboo shoots & black truffle oil.",
+                    price: 24.99,
+                    old: 29.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 890,
+                },
+                {
+                    id: 10,
+                    name: "Grilled Sea Bass",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=85",
+                    desc: "Pan-seared sea bass, saffron beurre blanc, asparagus & caviar.",
+                    price: 36.99,
+                    old: 42.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 678,
+                },
+                {
+                    id: 11,
+                    name: "Wagyu Beef Steak",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=85",
+                    desc: "A5 Wagyu ribeye, truffle butter, roasted garlic & micro herbs.",
+                    price: 89.99,
+                    old: null,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 445,
+                },
+                {
+                    id: 12,
+                    name: "Roast Chicken",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=600&q=85",
+                    desc: "Herb-roasted free-range chicken, jus & seasonal vegetables.",
+                    price: 28.99,
+                    old: 34.99,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 1102,
+                },
+                {
+                    id: 13,
+                    name: "Rack of Lamb",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1514516345957-556ca7d90a29?w=600&q=85",
+                    desc: "French-trimmed lamb rack, rosemary jus, dauphinoise & peas.",
+                    price: 44.99,
+                    old: null,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 389,
+                },
+                {
+                    id: 14,
+                    name: "Butter Lobster",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=600&q=85",
+                    desc: "Whole lobster, brown butter, tarragon & crushed new potatoes.",
+                    price: 64.99,
+                    old: 74.99,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 276,
+                },
+                {
+                    id: 15,
+                    name: "Duck Confit",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1580476262798-bddd9f4b7369?w=600&q=85",
+                    desc: "Slow-cooked duck leg, cherry jus, lentils & crispy skin.",
+                    price: 38.99,
+                    old: 45.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 312,
+                },
+                {
+                    id: 16,
+                    name: "Pan Seared Salmon",
+                    cat: "mains",
+                    img: "https://images.unsplash.com/photo-1485704686097-ed47f7263ca4?w=600&q=85",
+                    desc: "Atlantic salmon, capers, lemon butter sauce & asparagus.",
+                    price: 32.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 876,
+                },
+                {
+                    id: 17,
+                    name: "Lobster Pasta",
+                    cat: "pasta",
+                    img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=600&q=85",
+                    desc: "Fresh tagliatelle, butter-poached lobster, saffron & cream.",
+                    price: 32.99,
+                    old: 38.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 2103,
+                },
+                {
+                    id: 18,
+                    name: "Cacio e Pepe",
+                    cat: "pasta",
+                    img: "https://images.unsplash.com/photo-1608897013039-887f21d8c804?w=600&q=85",
+                    desc: "Tonnarelli pasta, aged Pecorino Romano & Tellicherry pepper.",
+                    price: 19.99,
+                    old: null,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 789,
+                },
+                {
+                    id: 19,
+                    name: "Truffle Carbonara",
+                    cat: "pasta",
+                    img: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=600&q=85",
+                    desc: "Guanciale, egg yolk, black truffle & aged Parmigiano Reggiano.",
+                    price: 24.99,
+                    old: 28.99,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 1567,
+                },
+                {
+                    id: 20,
+                    name: "Squid Ink Pasta",
+                    cat: "pasta",
+                    img: "https://images.unsplash.com/photo-1522666257812-173fdc2d11fe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHBhc3RhJTIwaW1nc3xlbnwwfHwwfHx8MA%3D%3D",
+                    desc: "Squid ink fettuccine, prawns, cherry tomato & chilli.",
+                    price: 26.99,
+                    old: null,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 423,
+                },
+                {
+                    id: 21,
+                    name: "Pappardelle Bolognese",
+                    cat: "pasta",
+                    img: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&q=85",
+                    desc: "Slow-braised beef & pork ragù, pappardelle & Parmigiano.",
+                    price: 22.99,
+                    old: 26.99,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 1890,
+                },
+                {
+                    id: 22,
+                    name: "Gnocchi al Pesto",
+                    cat: "pasta",
+                    img: "https://plus.unsplash.com/premium_photo-1664472682525-0c0b50534850?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fHBhc3RhJTIwaW1nc3xlbnwwfHwwfHx8MA%3D%3D",
+                    desc: "Pillowy potato gnocchi, Ligurian basil pesto & pine nuts.",
+                    price: 18.99,
+                    old: null,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 567,
+                },
+                {
+                    id: 23,
+                    name: "Tagliatelle Funghi",
+                    cat: "pasta",
+                    img: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600&q=85",
+                    desc: "Fresh tagliatelle, porcini mushrooms, garlic, cream & thyme.",
+                    price: 21.99,
+                    old: 24.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 734,
+                },
+                {
+                    id: 24,
+                    name: "Rigatoni Amatriciana",
+                    cat: "pasta",
+                    img: "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?w=600&q=85",
+                    desc: "Rigatoni, guanciale, San Marzano tomato, pecorino & chilli.",
+                    price: 20.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 912,
+                },
+                {
+                    id: 25,
+                    name: "Truffle Mushroom Pizza",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=85",
+                    desc: "Stone-baked crust, white truffle, wild mushrooms & burrata.",
+                    price: 22.99,
+                    old: null,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 567,
+                },
+                {
+                    id: 26,
+                    name: "Prosciutto Pizza",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=85",
+                    desc: "San Marzano base, prosciutto di Parma, rocket & parmesan.",
+                    price: 24.99,
+                    old: 28.99,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 1120,
+                },
+                {
+                    id: 27,
+                    name: "Quattro Formaggi",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=85",
+                    desc: "Mozzarella, gorgonzola, taleggio, parmesan & honey drizzle.",
+                    price: 21.99,
+                    old: null,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 934,
+                },
+                {
+                    id: 28,
+                    name: "Nduja Salami Pizza",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&q=85",
+                    desc: "Spicy Calabrian nduja, fior di latte, peppers & fresh basil.",
+                    price: 23.99,
+                    old: 26.99,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 788,
+                },
+                {
+                    id: 29,
+                    name: "Margherita Classica",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=600&q=85",
+                    desc: "DOP San Marzano tomato, buffalo mozzarella, basil & EVOO.",
+                    price: 18.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 2340,
+                },
+                {
+                    id: 30,
+                    name: "Diavola Pizza",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&q=85",
+                    desc: "Spicy salami, fresh chilli, olives, capers & fior di latte.",
+                    price: 20.99,
+                    old: 23.99,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 612,
+                },
+                {
+                    id: 31,
+                    name: "Burrata Pizza",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1588315029754-2dd089d39a1a?w=600&q=85",
+                    desc: "Fresh burrata, roasted cherry tomatoes, basil oil & sea salt.",
+                    price: 23.99,
+                    old: null,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 445,
+                },
+                {
+                    id: 32,
+                    name: "BBQ Chicken Pizza",
+                    cat: "pizza",
+                    img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&q=85",
+                    desc: "Smoky BBQ base, grilled chicken, red onion & mozzarella.",
+                    price: 21.99,
+                    old: 25.99,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 876,
+                },
+                {
+                    id: 33,
+                    name: "Valrhona Lava Cake",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600&q=85",
+                    desc: "72% Valrhona chocolate, molten center & Tahitian vanilla ice cream.",
+                    price: 14.99,
+                    old: 18.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 567,
+                },
+                {
+                    id: 34,
+                    name: "Raspberry Soufflé",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=85",
+                    desc: "Warm soufflé with raspberry coulis & vanilla crème anglaise.",
+                    price: 12.99,
+                    old: null,
+                    badge: "new",
+                    rating: 5,
+                    reviews: 445,
+                },
+                {
+                    id: 35,
+                    name: "Crème Brûlée",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=600&q=85",
+                    desc: "Classic Tahitian vanilla custard with caramelised sugar crust.",
+                    price: 11.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 1234,
+                },
+                {
+                    id: 36,
+                    name: "Mango Panna Cotta",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600&q=85",
+                    desc: "Silky panna cotta, fresh mango coulis & passion fruit.",
+                    price: 10.99,
+                    old: 13.99,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 321,
+                },
+                {
+                    id: 37,
+                    name: "Tiramisu Classico",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&q=85",
+                    desc: "Espresso-soaked savoiardi, mascarpone cream & dusted cocoa.",
+                    price: 13.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 5,
+                    reviews: 1876,
+                },
+                {
+                    id: 38,
+                    name: "Tarte Tatin",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=600&q=85",
+                    desc: "Caramelised apple tarte tatin, crème fraîche & salted caramel.",
+                    price: 12.99,
+                    old: 15.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 743,
+                },
+                {
+                    id: 39,
+                    name: "Strawberry Pavlova",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&q=85",
+                    desc: "Crisp meringue, whipped cream, strawberries & passion curd.",
+                    price: 11.99,
+                    old: null,
+                    badge: "new",
+                    rating: 4,
+                    reviews: 432,
+                },
+                {
+                    id: 40,
+                    name: "Pistachio Baklava",
+                    cat: "desserts",
+                    img: "https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&q=85",
+                    desc: "Flaky filo, crushed pistachios, rose water syrup & gold dust.",
+                    price: 9.99,
+                    old: 12.99,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 654,
+                },
+                {
+                    id: 41,
+                    name: "Rose Lychee Martini",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=85",
+                    desc: "Premium vodka, lychee liqueur, rose water & pink peppercorn.",
+                    price: 14.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 1890,
+                },
+                {
+                    id: 42,
+                    name: "Matcha Ceremony",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=600&q=85",
+                    desc: "Ceremonial grade matcha, oat milk, gold dust & honey.",
+                    price: 9.99,
+                    old: null,
+                    badge: "new",
+                    rating: 5,
+                    reviews: 2340,
+                },
+                {
+                    id: 43,
+                    name: "Passion Fruit Spritz",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=85",
+                    desc: "Fresh passion fruit, Aperol, prosecco & orange zest.",
+                    price: 12.99,
+                    old: null,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 876,
+                },
+                {
+                    id: 44,
+                    name: "Cold Brew Coffee",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=85",
+                    desc: "18-hour cold brew, oat milk foam, vanilla & cinnamon dust.",
+                    price: 7.99,
+                    old: 9.99,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 1543,
+                },
+                {
+                    id: 45,
+                    name: "Hibiscus Lemonade",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=85",
+                    desc: "Fresh hibiscus tea, lemon juice, honey syrup & rosemary sprig.",
+                    price: 8.99,
+                    old: null,
+                    badge: "new",
+                    rating: 5,
+                    reviews: 654,
+                },
+                {
+                    id: 46,
+                    name: "Negroni Sbagliato",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&q=85",
+                    desc: "Campari, sweet vermouth, prosecco & orange twist.",
+                    price: 13.99,
+                    old: null,
+                    badge: "popular",
+                    rating: 4,
+                    reviews: 987,
+                },
+                {
+                    id: 47,
+                    name: "Mango Lassi",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFuZ28lMjBsYXNzaSUyMGRyaW5rcyUyMGltZ3N8ZW58MHx8MHx8fDA%3D",
+                    desc: "Fresh Alphonso mango, yoghurt, cardamom, saffron & rose petals.",
+                    price: 7.99,
+                    old: 9.99,
+                    badge: "new",
+                    rating: 5,
+                    reviews: 1230,
+                },
+                {
+                    id: 48,
+                    name: "Espresso Martini",
+                    cat: "drinks",
+                    img: "https://images.unsplash.com/photo-1648487727832-5ba6e81c7e8e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fEVzcHJlc3NvJTIwTWFydGluaSUyMGRyaW5rJTIwaGQlMjBpbWdzfGVufDB8fDB8fHww",
+                    desc: "Double espresso, vodka, Kahlúa & coffee bean garnish.",
+                    price: 15.99,
+                    old: null,
+                    badge: "chef",
+                    rating: 5,
+                    reviews: 1678,
+                },
+            ];
+
+            let cart = [],
+                currentFilter = "all",
+                searchTerm = "",
+                generatedOTP = "";
+
+            // LOADER
+            window.addEventListener("load", () => {
+                setTimeout(() => {
+                    document.getElementById("loader").classList.add("hide");
+                    setTimeout(
+                        () => document.getElementById("loader").remove(),
+                        800,
+                    );
+                }, 2200);
+            });
+
+            // NAV SCROLL
+            window.addEventListener("scroll", () => {
+                const nav = document.getElementById("navbar");
+                if (window.scrollY > 50) nav.classList.add("scrolled");
+                else nav.classList.remove("scrolled");
+                revealElements();
+            });
+
+            // PARTICLES
+            function createParticles() {
+                const container = document.getElementById("particles");
+                for (let i = 0; i < 30; i++) {
+                    const p = document.createElement("div");
+                    p.className = "particle";
+                    p.style.cssText = `left:${Math.random() * 100}%;animation-duration:${8 + Math.random() * 12}s;animation-delay:${Math.random() * 8}s;width:${Math.random() > 0.7 ? 3 : 2}px;height:${Math.random() > 0.7 ? 3 : 2}px`;
+                    container.appendChild(p);
+                }
+            }
+            createParticles();
+
+            // SCROLL REVEAL
+            function revealElements() {
+                document.querySelectorAll(".reveal").forEach((el) => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight * 0.88)
+                        el.classList.add("visible");
+                });
+            }
+            setTimeout(revealElements, 100);
+
+            // PRODUCTS
+            function renderProducts() {
+                const grid = document.getElementById("productsGrid");
+                let filtered;
+                if (currentFilter === "all") {
+                    const cats = [
+                        "salads",
+                        "mains",
+                        "pasta",
+                        "pizza",
+                        "desserts",
+                        "drinks",
+                    ];
+                    filtered = [];
+                    cats.forEach((cat) => {
+                        const items = products.filter(
+                            (p) =>
+                                p.cat === cat &&
+                                (p.name.toLowerCase().includes(searchTerm) ||
+                                    p.desc.toLowerCase().includes(searchTerm)),
+                        );
+                        filtered.push(...items.slice(0, 2));
+                    });
+                } else {
+                    filtered = products.filter(
+                        (p) =>
+                            p.cat === currentFilter &&
+                            (p.name.toLowerCase().includes(searchTerm) ||
+                                p.desc.toLowerCase().includes(searchTerm)),
+                    );
+                }
+                grid.innerHTML = filtered
+                    .map(
+                        (p, i) => `
+    <div class="product-card" style="transition-delay:${i * 0.05}s" onmousemove="tilt3D(event,this)" onmouseleave="resetTilt(this)">
+      <div class="card-img-wrap">
+        <div class="img-skeleton" id="sk${p.id}"></div>
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onload="document.getElementById('sk${p.id}').style.display='none'" onerror="this.src='https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80'">
+        ${p.badge ? `<span class="badge ${p.badge}">${p.badge === "chef" ? "Chef's Choice" : p.badge === "popular" ? "Most Loved" : "New"}</span>` : ""}
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.cat}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="stars">${"★".repeat(p.rating)}${"☆".repeat(5 - p.rating)} <span style="color:var(--muted);font-size:0.68rem">(${p.reviews.toLocaleString()})</span></div>
+        <div class="card-desc">${p.desc}</div>
+        <div class="card-footer">
+          <div>${p.old ? `<div class="old-price">$${p.old}</div>` : ""}
+          <div class="price">$${p.price}</div></div>
+          <button class="add-btn" onclick="addToCart(${p.id})">Add to Order</button>
+        </div>
+      </div>
+    </div>
+  `,
+                    )
+                    .join("");
+                setTimeout(() => {
+                    document
+                        .querySelectorAll(".product-card")
+                        .forEach((c, i) => {
+                            setTimeout(
+                                () => c.classList.add("visible"),
+                                i * 60,
+                            );
+                        });
+                }, 50);
+            }
+
+            function tilt3D(e, card) {
+                const r = card.getBoundingClientRect();
+                const rx = ((e.clientY - r.top) / r.height - 0.5) * 6;
+                const ry = ((e.clientX - r.left) / r.width - 0.5) * -6;
+                card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(4px)`;
+            }
+            function resetTilt(card) {
+                card.style.transform = "";
+            }
+
+            function setFilter(f, btn) {
+                currentFilter = f;
+                document
+                    .querySelectorAll(".filter-btn")
+                    .forEach((b) => b.classList.remove("active"));
+                btn.classList.add("active");
+                renderProducts();
+            }
+            function filterProducts() {
+                searchTerm = document
+                    .getElementById("searchInput")
+                    .value.toLowerCase();
+                renderProducts();
+            }
+
+            // CART
+            function addToCart(id) {
+                const p = products.find((x) => x.id === id);
+                const ex = cart.find((x) => x.id === id);
+                if (ex) ex.qty++;
+                else cart.push({ ...p, qty: 1 });
+                updateCartUI();
+                showToast(`✦ ${p.name} added to your order`);
+            }
+            function removeFromCart(id) {
+                cart = cart.filter((x) => x.id !== id);
+                updateCartUI();
+            }
+            function changeQty(id, d) {
+                const item = cart.find((x) => x.id === id);
+                if (!item) return;
+                item.qty += d;
+                if (item.qty <= 0) cart = cart.filter((x) => x.id !== id);
+                updateCartUI();
+            }
+            function updateCartUI() {
+                const total = cart.reduce((s, i) => s + i.qty, 0);
+                document.getElementById("cartCount").textContent = total;
+                const el = document.getElementById("cartItems"),
+                    footer = document.getElementById("cartFooter");
+                if (!cart.length) {
+                    el.innerHTML =
+                        '<div class="cart-empty"><div class="cart-empty-icon">◎</div>Your cart is empty</div>';
+                    footer.style.display = "none";
+                    return;
+                }
+                footer.style.display = "block";
+                el.innerHTML = cart
+                    .map(
+                        (i) => `
+    <div class="cart-item">
+      <img class="ci-img" src="${i.img}" alt="${i.name}" onerror="this.style.display='none'">
+      <div class="ci-info">
+        <div class="ci-name">${i.name}</div>
+        <div class="ci-price">$${i.price}</div>
+        <div class="ci-qty">
+          <button class="qty-btn" onclick="changeQty(${i.id},-1)">−</button>
+          <span class="qty-num">${i.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i.id},1)">+</button>
+          <button class="remove-btn" onclick="removeFromCart(${i.id})">✕</button>
+        </div>
+      </div>
+    </div>`,
+                    )
+                    .join("");
+                document.getElementById("cartTotal").textContent =
+                    "$" +
+                    cart.reduce((s, i) => s + i.price * i.qty, 0).toFixed(2);
+            }
+            function toggleCart() {
+                document.getElementById("cartSidebar").classList.toggle("open");
+                document.getElementById("cartOverlay").classList.toggle("open");
+            }
+            function checkout() {
+                const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+                showToast(`✦ Order placed — $${total.toFixed(2)}`);
+                cart = [];
+                updateCartUI();
+                toggleCart();
+            }
+
+            // TOAST
+            function showToast(msg) {
+                const t = document.getElementById("toast");
+                t.textContent = msg;
+                t.classList.add("show");
+                setTimeout(() => t.classList.remove("show"), 2800);
+            }
+
+            // AUTH
+            function openModal() {
+                document.getElementById("authModal").classList.add("open");
+            }
+            function closeModal() {
+                document.getElementById("authModal").classList.remove("open");
+                document.getElementById("otpSection").style.display = "none";
+                document.getElementById("loginForm").style.display = "block";
+                document.getElementById("signupForm").style.display = "none";
+                document
+                    .querySelectorAll(".success-msg,.error-msg")
+                    .forEach((e) => (e.style.display = "none"));
+            }
+            function switchTab(tab, btn) {
+                document
+                    .querySelectorAll(".tab-btn")
+                    .forEach((b) => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.getElementById("loginForm").style.display =
+                    tab === "login" ? "block" : "none";
+                document.getElementById("signupForm").style.display =
+                    tab === "signup" ? "block" : "none";
+                document.getElementById("otpSection").style.display = "none";
+            }
+            function genOTP() {
+                return Math.floor(100000 + Math.random() * 900000).toString();
+            }
+            function otpNext(input, nextId) {
+                if (input.value && nextId)
+                    document.getElementById(nextId).focus();
+            }
+            function handleLogin() {
+                const email = document.getElementById("loginEmail").value,
+                    pass = document.getElementById("loginPass").value;
+                let ok = true;
+                document.getElementById("loginEmailErr").style.display = "none";
+                document.getElementById("loginPassErr").style.display = "none";
+                if (!email.includes("@")) {
+                    document.getElementById("loginEmailErr").style.display =
+                        "block";
+                    ok = false;
+                }
+                if (!pass) {
+                    document.getElementById("loginPassErr").style.display =
+                        "block";
+                    ok = false;
+                }
+                if (!ok) return;
+                generatedOTP = genOTP();
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("otpSection").style.display = "block";
+                document.getElementById("otpNote").textContent =
+                    `Verification code sent to ${email}`;
+                document.getElementById("otpDemo").textContent =
+                    `Demo code: ${generatedOTP}`;
+                document.getElementById("o1").focus();
+            }
+            function handleSignup() {
+                const email = document.getElementById("signupEmail").value,
+                    pass = document.getElementById("signupPass").value;
+                let ok = true;
+                document.getElementById("signupEmailErr").style.display =
+                    "none";
+                document.getElementById("signupPassErr").style.display = "none";
+                if (!email.includes("@")) {
+                    document.getElementById("signupEmailErr").style.display =
+                        "block";
+                    ok = false;
+                }
+                if (pass.length < 8) {
+                    document.getElementById("signupPassErr").style.display =
+                        "block";
+                    ok = false;
+                }
+                if (!ok) return;
+                generatedOTP = genOTP();
+                document.getElementById("signupForm").style.display = "none";
+                document.getElementById("otpSection").style.display = "block";
+                document.getElementById("otpNote").textContent =
+                    `Verification code sent to ${email}`;
+                document.getElementById("otpDemo").textContent =
+                    `Demo code: ${generatedOTP}`;
+                document.getElementById("o1").focus();
+            }
+            function verifyOTP() {
+                const entered = ["o1", "o2", "o3", "o4", "o5", "o6"]
+                    .map((id) => document.getElementById(id).value)
+                    .join("");
+                if (entered === generatedOTP) {
+                    document.getElementById("otpSuccess").style.display =
+                        "block";
+                    document.getElementById("authNavBtn").textContent =
+                        "✦ Welcome";
+                    document.getElementById("authNavBtn").style.color =
+                        "var(--gold2)";
+                    document.getElementById("authNavBtn").style.borderColor =
+                        "rgba(201,169,110,0.4)";
+                    setTimeout(() => closeModal(), 1500);
+                    showToast("✦ Welcome to Lumière");
+                } else {
+                    showToast("Incorrect code — please try again");
+                    document
+                        .querySelectorAll(".otp-input")
+                        .forEach((i) => (i.value = ""));
+                    document.getElementById("o1").focus();
+                }
+            }
+            function resendOTP() {
+                generatedOTP = genOTP();
+                document.getElementById("otpDemo").textContent =
+                    `New code: ${generatedOTP}`;
+                showToast("✦ New code sent");
+            }
+            function socialLogin(p) {
+                document.getElementById("authNavBtn").textContent = "✦ Welcome";
+                closeModal();
+                showToast(`✦ Signed in with ${p}`);
+            }
+
+            // AI
+            async function askAI() {
+                const q = document.getElementById("aiQuery").value.trim();
+                if (!q) return;
+                const resp = document.getElementById("aiResponse");
+                resp.style.display = "block";
+                resp.innerHTML =
+                    '<span style="color:var(--muted)">Our chef is crafting a response...</span>';
+                const catalog = products
+                    .map(
+                        (p) => `${p.name} (${p.cat}) — $${p.price} — ${p.desc}`,
+                    )
+                    .join("\n");
+                try {
+                    const res = await fetch("http://localhost:3001/api/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            system: `You are a sophisticated chef AI concierge for Lumière — an elegant premium restaurant. Menu:\n\n${catalog}\n\nHelp guests find perfect dishes. Be refined, warm and eloquent. Recommend specific dishes by name.`,
+                            messages: [{ role: "user", content: q }],
+                        }),
+                    });
+                    const data = await res.json();
+                    resp.innerHTML = (
+                        data.content?.map((i) => i.text || "").join("") ||
+                        "My apologies, please try again."
+                    ).replace(/\n/g, "<br>");
+                } catch (e) {
+                    resp.innerHTML =
+                        "Our Chef AI is momentarily unavailable. Please ensure server.js is running.";
+                }
+            }
+
+            // NEWSLETTER
+            function subscribeNewsletter() {
+                const email = document.getElementById("newsletterEmail").value;
+                if (!email.includes("@")) {
+                    showToast("Please enter a valid email");
+                    return;
+                }
+                showToast("✦ Welcome to the Lumière Circle!");
+                document.getElementById("newsletterEmail").value = "";
+            }
+
+            // COUNTERS
+            function animateCounter(id, target, suffix = "") {
+                let n = 0;
+                const el = document.getElementById(id);
+                const s = () => {
+                    n += Math.ceil(target / 60);
+                    if (n >= target) {
+                        el.textContent = target.toLocaleString() + suffix;
+                        return;
+                    }
+                    el.textContent = n.toLocaleString() + suffix;
+                    requestAnimationFrame(s);
+                };
+                setTimeout(s, 2400);
+            }
+            animateCounter("s1", 248, "+");
+            animateCounter("s2", 52400, "+");
+            animateCounter("s3", 12, "+");
+            animateCounter("s4", 1893, "+");
+
+            renderProducts();
+        </script>
+    </body>
+</html>
