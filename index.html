@@ -2390,7 +2390,8 @@
         </footer>
         <div class="footer-bottom">
             <div class="footer-copy">
-                © 2025 Lumière · All rights reserved · Premium Dining Experience
+                © 2025 Lumière · Designed & Developed by Aiman Khan · All rights
+                reserved
             </div>
             <div class="footer-socials">
                 <a href="#">Instagram</a>
@@ -3312,6 +3313,7 @@
             }
 
             // AI
+            // AI
             async function askAI() {
                 const q = document.getElementById("aiQuery").value.trim();
                 if (!q) return;
@@ -3324,23 +3326,35 @@
                         (p) => `${p.name} (${p.cat}) — $${p.price} — ${p.desc}`,
                     )
                     .join("\n");
+                const systemPrompt = `You are a sophisticated chef AI concierge for Lumière — an elegant premium restaurant. Menu:\n\n${catalog}\n\nHelp guests find perfect dishes. Be refined, warm and eloquent. Recommend specific dishes by name.`;
                 try {
-                    const res = await fetch("http://localhost:3001/api/chat", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            system: `You are a sophisticated chef AI concierge for Lumière — an elegant premium restaurant. Menu:\n\n${catalog}\n\nHelp guests find perfect dishes. Be refined, warm and eloquent. Recommend specific dishes by name.`,
-                            messages: [{ role: "user", content: q }],
-                        }),
-                    });
+                    const res = await fetch(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization:
+                                    "Bearer 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",
+                            },
+                            body: JSON.stringify({
+                                model: "llama-3.3-70b-versatile",
+                                messages: [
+                                    { role: "system", content: systemPrompt },
+                                    { role: "user", content: q },
+                                ],
+                                max_tokens: 1000,
+                            }),
+                        },
+                    );
                     const data = await res.json();
-                    resp.innerHTML = (
-                        data.content?.map((i) => i.text || "").join("") ||
-                        "My apologies, please try again."
-                    ).replace(/\n/g, "<br>");
+                    const text =
+                        data.choices?.[0]?.message?.content ||
+                        "My apologies, please try again.";
+                    resp.innerHTML = text.replace(/\n/g, "<br>");
                 } catch (e) {
                     resp.innerHTML =
-                        "Our Chef AI is momentarily unavailable. Please ensure server.js is running.";
+                        "Our Chef AI is momentarily unavailable. Please try again.";
                 }
             }
 
